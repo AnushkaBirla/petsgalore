@@ -25,7 +25,7 @@ const animalToBreed = {
   bird: ["crow", "parrot", "eagle", "hawk"]
 };
 
-//deal w console log errors w the dropdown updating b4 adding valdiation
+// do later 
 const animalToMaxAge = {
   dog: 14,
   cat: 15,
@@ -40,16 +40,17 @@ function isValidUSZip(sZip) {
 }
 
 function isValidAge(age) {
-  return /^\d+$/.test(age) || age === ""
+  return (/^\d+$/.test(age) && age > 0) || age === ""
 }
 
-function App() {
+function InputForm() {
   // states
   // zip code error
   // max age error
 
   // const classes = useStyles();
   const [animal, setAnimal] = React.useState("cat");
+  const [breed, setBreed] = React.useState("persian");
   const [currentBreeds, setCurrentBreeds] = React.useState(["Default"]);
   const [zip, setZip] = React.useState("");
   const [age, setAge] = React.useState("");
@@ -66,7 +67,9 @@ function App() {
     setCurrentBreeds(animalToBreed[animal]);
   }, [animal]);
 
-  const handleBreedChange = (event) => {};
+  const handleBreedChange = (event) => {
+    setBreed(event.target.value);
+  };
 
   const handleZipCodeChange = (event) => {
     // var numberPattern = /^\d+$/
@@ -97,27 +100,15 @@ function App() {
   return (
     <>
       <div>
-        <form noValidate autoComplete="off">
-          <TextField
-            error={zipcodeError}
-            helperText={zipcodeError ? "Invalid ZIP code" : ""}
-            id="standard-error-helper-text"
-            label="Zipcode"
-            onChange={handleZipCodeChange}
-          />
-          <br></br>
-          <TextField
-            error={maxAgeError}
-            helperText={maxAgeError ? "Invalid pet age" : ""}
-            id="standard-error-helper-text"
-            label="Max pet age"
-            onChange={handleAgeChange}
-          />
-        </form>
-        {/* <FormControl>
-          <InputLabel htmlFor="my-input">Max Age</InputLabel>
-          <Input id="my-isnput" aria-describedby="my-helper-text" />
-        </FormControl> */}
+      <br></br>
+        <TextField
+          error={zipcodeError}
+          helperText={zipcodeError ? "Invalid ZIP code" : ""}
+          id="standard-error-helper-text"
+          label="Zipcode"
+          onChange={handleZipCodeChange}
+        />
+        <br></br>
       </div>
       <br></br>
       <FormControl>
@@ -129,22 +120,34 @@ function App() {
           onChange={handleAnimalChange}
         >
           {animalList.map((animal) => (
-            <MenuItem value={10}>{animal}</MenuItem>
+            <MenuItem value={animal}>{animal}</MenuItem>
           ))}
         </Select>
-        <br></br>
+      </FormControl>
+      <br></br>
+      <br></br>
+      <FormControl>
         <InputLabel id="demo-simple-select-label">Breed</InputLabel>
         <Select
           labelId="demo-simple-select-label"
           id="demo-simple-select"
-          value={animal}
+          value={breed}
           onChange={handleBreedChange}
         >
           {currentBreeds.map((breed) => (
-            <MenuItem value={10}>{breed}</MenuItem>
+            <MenuItem value={breed}>{breed}</MenuItem>
           ))}
         </Select>
       </FormControl>
+      <br></br>
+      <br></br>
+      <TextField
+        error={maxAgeError}
+        helperText={maxAgeError ? "Invalid pet age" : ""}
+        id="standard-error-helper-text"
+        label="Max pet age"
+        onChange={handleAgeChange}
+      />
       <br></br>
       <br></br>
       <br></br>
@@ -155,13 +158,68 @@ function App() {
   );
 }
 
+function PetCard(props) {
+  return (
+    <>
+      <h1>{props.name}</h1>
+      <p>Age: {props.age}</p>
+      <p>Location: {props.location}</p>
+      <img alt="dog" src={props.image} width="100%" height="auto" />
+      <Button variant="contained" color="primary">
+        More details
+      </Button>
+    </>
+  );
+}
 
-export default App;
+let searchResults = [
+  {
+    name: "James",
+    age: 8,
+    location: 95220,
+    image: "https://borland.s3.amazonaws.com/dog1.jpg"
+  },
+  {
+    name: "Max",
+    age: 5,
+    location: 95220,
+    image: "https://borland.s3.amazonaws.com/dog2.jpg"
+  },
+  {
+    name: "Marvin",
+    age: 2,
+    location: 95220,
+    image: "https://borland.s3.amazonaws.com/dog3.jpg"
+  },
+  {
+    name: "Carla",
+    age: 12,
+    location: 95220,
+    image: "https://borland.s3.amazonaws.com/dog4.jpg"
+  },
+  {
+    name: "Eddy",
+    age: 2,
+    location: 95220,
+    image: "https://borland.s3.amazonaws.com/dog5.jpg"
+  }
+];
 
-// export default function App() {
-//   return (
-//     <div className="App">
-//       <InputForm />
-//     </div>
-//   );
-// }
+export default function App() {
+  return (
+    <div className="App">
+      <InputForm />
+      <h1>Search Results</h1>
+      {searchResults.map((result) => {
+        return (
+          <PetCard
+            name={result.name}
+            age={result.age}
+            location={result.location}
+            image={result.image}
+          />
+        );
+      })}
+    </div>
+  );
+}
