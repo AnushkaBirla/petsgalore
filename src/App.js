@@ -25,14 +25,23 @@ const animalToBreed = {
   bird: ["crow", "parrot", "eagle", "hawk"]
 };
 
+//deal w console log errors w the dropdown updating b4 adding valdiation
+const animalToMaxAge = {
+  dog: 14,
+  cat: 15,
+  bird: 20
+}
+
 // example backend response for animal list
 const animalList = ["bird", "cat", "dog"];
 
 function isValidUSZip(sZip) {
-  return /(^\d{5}$)|(^\d{5}-\d{4}$)/.test(sZip) || sZip === "";
+  return /(^\d{5}$)|(^\d{5}-\d{4}$)/.test(sZip) || sZip === ""
 }
 
-function isValidAge(age) {}
+function isValidAge(age) {
+  return /^\d+$/.test(age) || age === ""
+}
 
 function App() {
   // states
@@ -43,8 +52,9 @@ function App() {
   const [animal, setAnimal] = React.useState("cat");
   const [currentBreeds, setCurrentBreeds] = React.useState(["Default"]);
   const [zip, setZip] = React.useState("");
+  const [age, setAge] = React.useState("");
 
-  // handle error states for material ui
+  
   const [zipcodeError, setZipcodeError] = React.useState(false);
   const [maxAgeError, setMaxAgeError] = React.useState(false);
 
@@ -58,19 +68,27 @@ function App() {
 
   const handleBreedChange = (event) => {};
 
-  // var zipCodePattern = /^\d{5}$|^\d{5}-\d{4}$/
   const handleZipCodeChange = (event) => {
     // var numberPattern = /^\d+$/
     // if (numberPattern.test(event.target.value)) {
     //   setZip(event.target.value);
     // }
     setZip(event.target.value);
-    //setZipcodeError(!isValidUSZip(zip));
   };
+
+  const handleAgeChange = (event) => {
+    console.log(animal)
+    setAge(event.target.value)
+  }
 
   React.useEffect(() => {
     setZipcodeError(!isValidUSZip(zip));
   }, [zip]);
+
+  React.useEffect(() => {
+    setMaxAgeError(!isValidAge(age));
+  }, [age]);
+
 
   const handleSubmitForm = () => {
     //setZipcodeError(!isValidUSZip(zip));
@@ -87,20 +105,19 @@ function App() {
             label="Zipcode"
             onChange={handleZipCodeChange}
           />
-        </form>
-        <FormControl>
-          <InputLabel htmlFor="my-input">Zipcode</InputLabel>
-          <Input
-            error={true}
-            id="my-isnput"
-            aria-describedby="my-helper-text"
-            onChange={handleZipCodeChange}
+          <br></br>
+          <TextField
+            error={maxAgeError}
+            helperText={maxAgeError ? "Invalid pet age" : ""}
+            id="standard-error-helper-text"
+            label="Max pet age"
+            onChange={handleAgeChange}
           />
-        </FormControl>
-        <FormControl>
+        </form>
+        {/* <FormControl>
           <InputLabel htmlFor="my-input">Max Age</InputLabel>
           <Input id="my-isnput" aria-describedby="my-helper-text" />
-        </FormControl>
+        </FormControl> */}
       </div>
       <br></br>
       <FormControl>
