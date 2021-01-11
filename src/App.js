@@ -1,5 +1,8 @@
 import './App.css';
 import React from "react";
+import { Router, Link } from "@reach/router";
+import { parse } from 'query-string'
+
 import {
   FormControl,
   InputLabel,
@@ -7,7 +10,7 @@ import {
   TextField,
   Button,
   Select,
-  MenuItem
+  MenuItem,
 } from "@material-ui/core";
 // import "./styles.css";
 
@@ -80,7 +83,6 @@ function InputForm() {
   };
 
   const handleAgeChange = (event) => {
-    console.log(animal)
     setAge(event.target.value)
   }
 
@@ -94,8 +96,18 @@ function InputForm() {
 
 
   const handleSubmitForm = () => {
+    <Link to="?zipcode=zip">Relative query</Link>
     //setZipcodeError(!isValidUSZip(zip));
   };
+
+  const submitButton = 
+    <Button 
+      variant="contained" 
+      onClick={handleSubmitForm}
+      disabled={!(animal && breed && age && zip)}
+    >
+      Submit
+    </Button>
 
   return (
     <>
@@ -151,9 +163,52 @@ function InputForm() {
       <br></br>
       <br></br>
       <br></br>
-      <Button variant="contained" onClick={handleSubmitForm}>
-        Submit
-      </Button>
+      <Link 
+        to={`search?zip=${zip}&animal=${animal}&breed=${breed}&maxage=${age}`}
+      >
+        {submitButton}
+      </Link>
+    </>
+  );
+}
+
+
+
+function SearchResults({location}) {
+  console.log(parse(location.search))
+  return (
+    <div className="App">
+      <h1>Search Results</h1>
+      {searchResults.map((result) => {
+        return (
+          <PetCard
+            key={result.id}
+            id={result.id}
+            name={result.name}
+            age={result.age}
+            location={result.location}
+            image={result.image}
+            desc={result.desc}
+          />
+        );
+      })}
+    </div>
+  );
+}
+
+
+function PetDetails({petId, location}) {
+  // later on could fetch more pet info from an api on the express server
+  console.log(petId)
+  console.log(parse(location))
+  console.log(parse(location.search))
+  let petInfo = pets[petId];
+  return (
+    <>
+      <h1>{petInfo.name}</h1>
+      <p>Age: {petInfo.age}</p>
+      <p>Location: {petInfo.location}</p>
+      <p>Description: {petInfo.desc}</p>
     </>
   );
 }
@@ -165,61 +220,101 @@ function PetCard(props) {
       <p>Age: {props.age}</p>
       <p>Location: {props.location}</p>
       <img alt="dog" src={props.image} width="100%" height="auto" />
-      <Button variant="contained" color="primary">
-        More details
-      </Button>
+      <Link to={`pet/${props.id}`}>More details</Link>
     </>
   );
 }
 
-let searchResults = [
-  {
-    name: "James",
-    age: 8,
-    location: 95220,
-    image: "https://borland.s3.amazonaws.com/dog1.jpg"
-  },
-  {
-    name: "Max",
-    age: 5,
-    location: 95220,
-    image: "https://borland.s3.amazonaws.com/dog2.jpg"
-  },
-  {
-    name: "Marvin",
-    age: 2,
-    location: 95220,
-    image: "https://borland.s3.amazonaws.com/dog3.jpg"
-  },
-  {
-    name: "Carla",
-    age: 12,
-    location: 95220,
-    image: "https://borland.s3.amazonaws.com/dog4.jpg"
-  },
-  {
-    name: "Eddy",
-    age: 2,
-    location: 95220,
-    image: "https://borland.s3.amazonaws.com/dog5.jpg"
-  }
-];
-
 export default function App() {
   return (
     <div className="App">
-      <InputForm />
-      <h1>Search Results</h1>
-      {searchResults.map((result) => {
-        return (
-          <PetCard
-            name={result.name}
-            age={result.age}
-            location={result.location}
-            image={result.image}
-          />
-        );
-      })}
+      <Router>
+        <InputForm path="/"/>
+        <SearchResults path="/search" />
+        <PetDetails path="/search/pet/:petId" />
+      </Router>
     </div>
   );
 }
+
+let pets = {
+  1: {
+    name: "James",
+    age: 8,
+    location: 95220,
+    image: "https://borland.s3.amazonaws.com/dog1.jpg",
+    desc: "he's a very happy dog!"
+  },
+  2: {
+    name: "Max",
+    age: 5,
+    location: 95220,
+    image: "https://borland.s3.amazonaws.com/dog2.jpg",
+    desc: "he's a very sad dog!"
+  },
+  3: {
+    name: "Marvin",
+    age: 2,
+    location: 95220,
+    image: "https://borland.s3.amazonaws.com/dog3.jpg",
+    desc: "he's a very mean dog!"
+  },
+  4: {
+    name: "Carla",
+    age: 12,
+    location: 95220,
+    image: "https://borland.s3.amazonaws.com/dog4.jpg",
+    desc: "he's a very enthusiastic dog!"
+  },
+  5: {
+    name: "Eddy",
+    age: 2,
+    location: 95220,
+    image: "https://borland.s3.amazonaws.com/dog5.jpg",
+    desc: "he's a very calm dog!"
+  }
+};
+
+let searchResults = [
+  {
+    id: 1,
+    name: "James",
+    age: 8,
+    location: 95220,
+    image: "https://borland.s3.amazonaws.com/dog1.jpg",
+    desc: "he's a very happy dog!"
+  },
+  {
+    id: 2,
+    name: "Max",
+    age: 5,
+    location: 95220,
+    image: "https://borland.s3.amazonaws.com/dog2.jpg",
+    desc: "he's a very sad dog!"
+  },
+  {
+    id: 3,
+    name: "Marvin",
+    age: 2,
+    location: 95220,
+    image: "https://borland.s3.amazonaws.com/dog3.jpg",
+    desc: "he's a very mean dog!"
+  },
+  {
+    id: 4,
+    name: "Carla",
+    age: 12,
+    location: 95220,
+    image: "https://borland.s3.amazonaws.com/dog4.jpg",
+    desc: "he's a very enthusiastic dog!"
+  },
+  {
+    id: 5,
+    name: "Eddy",
+    age: 2,
+    location: 95220,
+    image: "https://borland.s3.amazonaws.com/dog5.jpg",
+    desc: "he's a very calm dog!"
+  }
+];
+
